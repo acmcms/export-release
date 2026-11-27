@@ -437,6 +437,61 @@ function makeFormReply(query, layout){
 	return ae3.Reply.binary('XLS', query, makeFormBinary(layout), `${name}.xls`);
 }
 
+function reduceFieldValue(field, value){
+	if(value === null || value === undefined){
+		return "";
+	}
+	if(field.variant === "link" && "object" !== typeof value){
+		const prefix = field.prefix || "";
+		const suffix = field.suffix || "";
+		return prefix || suffix ? value + " (" + prefix + value + suffix + ")" : value;
+	}
+	if("object" === typeof value && !Array.isArray(value) && !value.layout){
+		return Format.jsDescribe(value);
+	}
+	return value;
+}
+
+/** Reduces a "data-view", "select-view" or "sequence" layout to a 2-column "grid"
+ * (title | value). Reads options as well as fields/values: two of the three switches hand
+ * over a layout carrying options and no fields. "grid" rather than "sequence", because
+ * skin-standard-xml's own Sequence.jso intercepts a shape named "sequence". */
+function reduceDataViewGridXls(layout){
+	const fields = layout.fields || [];
+	const values = layout.values || {};
+	const options = layout.options || [];
+
+	// this engine's Array.prototype has no flatMap - map, then reduce/concat one level flat
+	const pairs = Array(fields).length
+		? Array(fields).map(function(field){
+			const key = field.id || field.name;
+			return [
+				field.title || field.name || key || "",
+				reduceFieldValue(field, key ? values[key] : undefined)
+			];
+		})
+		: Array(options).map(function(option){
+			return [
+				option.title || option.name || option.value || "",
+				reduceFieldValue(option, option.value)
+			];
+		});
+
+	return {
+		layout : "grid",
+		title : layout.title || layout.attributes && layout.attributes.title || undefined,
+		width : 2,
+		border : true,
+		elements : pairs.reduce(function(flat, pair){
+			return flat.concat(pair);
+		}, [])
+	};
+}
+
+function makeDataViewReply(query, layout){
+	return createBinaryFromLayout(reduceDataViewGridXls(layout));
+}
+
 Object.defineProperties(object, {
 	createBinaryFromLayout : { value : createBinaryFromLayout },
 	makeDataTableBinary : { value : makeDataTableBinary },
@@ -445,6 +500,8 @@ Object.defineProperties(object, {
 	makeFormBinary : { value : makeFormBinary },
 	makeFormMessage : { value : makeFormMessage },
 	makeFormReply : { value : makeFormReply },
+	makeDataViewReply : { value : makeDataViewReply },
+	reduceDataViewGrid : { value : reduceDataViewGridXls },
 });
 
 module.exports = object;

@@ -563,7 +563,9 @@ debug.state = {
 	},
 
 	init : function(){
-		window.document.write("<style>\n.dbglyr{position:fixed;}\n</style>\n<!--[if lt IE 7]>\n<style>\nhtml,body{margin:0;padding:0;width:100%;height:100%;overflow:auto;}\n.dbglyr{position:absolute;}\n</style>\n<![endif]-->\n");
+		var style = document.createElement("style");
+		style.appendChild(document.createTextNode(".dbglyr{position:fixed;}"));
+		(document.head || document.getElementsByTagName("head")[0]).appendChild(style);
 		this.addEvent(window, "load", this.init2);
 		this.addEvent(document, "DOMContentLoaded", this.init2);
 	},

@@ -218,11 +218,23 @@
 								border: 0;
 								overflow: hidden;
 							}
+							BODY#body {
+								display: flex;
+								flex-flow: column nowrap;
+							}
+							#body > .pg-root {
+								flex: 1 1 auto;
+								min-height: 0;
+							}
+							#body > .pg-root .pg-main {
+								min-height: 0;
+								overflow: auto;
+							}
 						</style>
 						<script type="text/javascript" src="{$srot}skin-jsclient/js/ae3.js"></script>
 						<script>
 							var root = document.createElement("div");
-							root.style.cssText = "position:absolute;left:0;top:0;width:100%;height:100%;background-color:#aaa;overflow:hidden";
+							root.style.cssText = "position:relative;flex:0 0 auto;width:100%;height:1.833em;min-height:22px;background-color:#aaa;overflow:hidden";
 	
 							document.body.style.margin = 0;
 							document.body.appendChild(root);
@@ -239,7 +251,6 @@
 								/* document.getElementById("njT").style.zIndex = 0; */
 								ae3.display();
 							},0);
-							window.stop ? window.stop() : document.close();
 	
 							if(false){
 					

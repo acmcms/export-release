@@ -3,10 +3,6 @@
  */
 
 const FiltersFormLayout = require("./FiltersFormLayout");
-const reduceDataViewGridPdf = require("./ReduceDataViewGridPdfFn");
-const reduceDataViewGridTxt = require("./ReduceDataViewGridTxtFn");
-const reduceDataViewGridHtml = require("./ReduceDataViewGridHtmlFn");
-const reduceDataViewGridXls = require("./ReduceDataViewGridXlsFn");
 const formatXmlAttributes = Format.xmlAttributes;
 const formatXmlElement = Format.xmlElement;
 const formatXmlElements = Format.xmlElements;
@@ -32,13 +28,13 @@ function makeDataViewReply(context, layout){
 	if(query?.parameters.___output){
 		switch(query.parameters.___output){
 		case "pdf":
-			return reduceDataViewGridPdf(layout);
+			return require("ae3/pdf").reduceDataViewGrid(layout);
 		case "txt":
-			return reduceDataViewGridTxt(layout);
+			return require("ae3/txt").reduceDataViewGrid(layout);
 		case "html":
-			return reduceDataViewGridHtml(layout);
+			return require("ae3/html").reduceDataViewGrid(layout);
 		case "xls":
-			return reduceDataViewGridXls(layout);
+			return require("ae3/xls").reduceDataViewGrid(layout);
 		}
 	}
 
